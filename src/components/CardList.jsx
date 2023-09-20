@@ -6,15 +6,36 @@ import CreditCard from "./CreditCard";
 const cards = [
   {
     name: "Card 1",
-    card: <CreditCard color="bg-amber-500" shadowSize={"xl"} />,
+    card: (
+      <CreditCard
+        color="bg-amber-500"
+        cardDb="cards"
+        newCard={false}
+        displayCard={false}
+      />
+    ),
   },
   {
     name: "Card 2",
-    card: <CreditCard color="bg-violet-300" shadowSize={"xl"} />,
+    card: (
+      <CreditCard
+        color="bg-violet-300"
+        cardDb="cards"
+        newCard={false}
+        displayCard={false}
+      />
+    ),
   },
   {
     name: "Card 3",
-    card: <CreditCard color="bg-indigo-400" shadowSize={"xl"} />,
+    card: (
+      <CreditCard
+        color="bg-indigo-400"
+        cardDb="cards"
+        newCard={false}
+        displayCard={false}
+      />
+    ),
   },
 ];
 
@@ -29,11 +50,11 @@ export default function Example() {
             <span className="block truncate text-xs font-light text-center ">
               Select Card
             </span>
-            <span className="block p-2">{selected.card}</span>
+            <span className="block p-2">{selected.name}</span>
             <div className="flex items-center">
-              {/* <span className="h-fit pointer-events-none inset-y-0 right-0 flex items-center pr-2">
-                <ChevronUpDownIcon className="h-8 w-8 text-gray-400" aria-hidden="true" />
-              </span> */}
+              <span className="pointer-events-none absolute inset-y-0 top-4 right-4 flex items-center pr-2">
+                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              </span>
             </div>
           </Listbox.Button>
           <Transition
@@ -42,7 +63,7 @@ export default function Example() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute max-h-60 w-1/2 left-24 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options className="absolute max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {cards.map((person, personIdx) => (
                 <Listbox.Option
                   key={personIdx}
@@ -77,9 +98,15 @@ export default function Example() {
         <div className="flex items-center justify-evenly">
           <button
             type="button"
-            className="mt-px text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+            className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
           >
             Delete
+          </button>
+          <button
+            type="button"
+            className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+          >
+            Set Active
           </button>
         </div>
       </Listbox>

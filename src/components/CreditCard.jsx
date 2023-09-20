@@ -1,13 +1,54 @@
-import React, { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
+import {
+  cc_format,
+  cc_expires_format,
+  currentMonth,
+  currentYear,
+} from "../functions/creditCard";
+import { useSelector } from "react-redux";
+import {
+  setNumber,
+  setOwnerName,
+  setExpiryDate,
+  setCvv,
+  setVendor,
+} from "./add-card-form/addCardSlice";
 
-const CreditCard = ({ color, shadowSize }) => {
+const CreditCard = ({ color, cardDb, newCard, displayCard }) => {
+  let data = useSelector((state) => state.cardInfo[cardDb]);
+  let index = null;
+  if (displayCard) {
+    index = data.length - 1;
+  } else {
+    index = 0;
+  }
+  console.log(index);
+
+  const defaultData = useMemo(() => {
+    return newCard ? data : { ...data[index] };
+  }, [newCard, data, index]);
+
   const [creditCardDetails, setCreditCardDetails] = useState(defaultData);
   const [error, setError] = useState({
     number: false,
     expiryDate: false,
     cvv: false,
   });
+
+  const handleVendor = () => {
+    if (creditCardDetails.chooseVendor === "Choose a Vendor") {
+      return "";
+    } else {
+      return `${creditCardDetails.chooseVendor}`;
+    }
+  };
+
+  useEffect(() => {
+    // When the component mounts, update the form data with Redux data
+    setCreditCardDetails(defaultData);
+  }, [defaultData]);
+
   return (
     <div className="flex flex-col justify-center items-center bg-transparent min-h-scree">
       <div className="flex flex-col justify-center items-center">
@@ -21,11 +62,13 @@ const CreditCard = ({ color, shadowSize }) => {
               </div>
             )}
             <div
-              className={`flex flex-col justify-between ${color} h-48 lg:w-80 w-80 rounded-lg px-7 py-5 transition duration-400 shadow-${shadowSize} hover:scale-105 md:hover:scale-110 sample1`}
+              className={`flex flex-col justify-between ${color} h-48 lg:w-80 w-80 rounded-lg px-7 py-5 transition duration-400 shadow-xl hover:scale-105 md:hover:scale-110 sample1`}
             >
               <div className="flex justify-between leading-4 items-center">
                 <span className="sm:text-sm text-xs font-medium">Credit Card</span>
+                <span className="sm:text-sm text-xs font-medium">{handleVendor()}</span>
                 <MasterCard />
+                {/* Replace with Logo ^ */}
               </div>
               <div className="flex">
                 <span className="flex items-center text-base top-3">
@@ -33,7 +76,7 @@ const CreditCard = ({ color, shadowSize }) => {
                   <input
                     className="bg-transparent focus:outline-none border border-transparent  focus:border-black rounded-md px-1"
                     type="text"
-                    value={cc_format(creditCardDetails?.number)}
+                    defaultValue={cc_format(creditCardDetails?.number)}
                     onChange={(e) => {
                       const { value } = e.target;
                       let finalValue = value.replaceAll(" ", "");
@@ -47,6 +90,7 @@ const CreditCard = ({ color, shadowSize }) => {
                         number: value,
                       });
                     }}
+                    disabled
                   />
                 </span>
               </div>
@@ -55,24 +99,19 @@ const CreditCard = ({ color, shadowSize }) => {
                   <input
                     className="bg-transparent focus:outline-none border border-transparent focus:border-black rounded-md px-1 w-full"
                     type="text"
-                    value={creditCardDetails?.ownerName}
+                    defaultValue={creditCardDetails?.ownerName}
                     maxLength="21"
-                    onChange={(e) =>
-                      setCreditCardDetails({
-                        ...creditCardDetails,
-                        ownerName: e?.target?.value,
-                      })
-                    }
+                    disabled
                   />
                 </span>
                 <span>
                   <input
                     className="bg-transparent focus:outline-none border border-transparent focus:border-black rounded-md  w-12"
                     type="text"
-                    value={cc_expires_format(creditCardDetails?.expiryDate)}
                     maxLength="5"
+                    defaultValue={cc_expires_format(creditCardDetails?.expiryDate)}
                     onChange={(e) => {
-                      const { value } = e?.target;
+                      const { value } = e.target;
                       value.match(/^(0[1-9]|1[0-2])\/(([0-9]{4}|[0-9]{2})$)/)
                         ? value.slice(-2) < currentYear.slice(-2)
                           ? setError({ ...error, expiryDate: true })
@@ -86,6 +125,7 @@ const CreditCard = ({ color, shadowSize }) => {
                         expiryDate: value,
                       });
                     }}
+                    disabled
                   />
                 </span>
               </div>
@@ -98,59 +138,13 @@ const CreditCard = ({ color, shadowSize }) => {
 };
 CreditCard.propTypes = {
   color: PropTypes.string.isRequired, // Ensure that color is a required string prop
-  shadowSize: PropTypes.string.isRequired, // Ensure that color is a required string prop
+  cardDb: PropTypes.string.isRequired,
+  newCard: PropTypes.bool.isRequired, // Ensure that color is a required string prop
+  displayCard: PropTypes.bool.isRequired, // Ensure that color is a required string prop
 };
 
 export default CreditCard;
-const defaultData = {
-  number: "1234567812345678",
-  ownerName: "John John",
-  expiryDate: "06/29",
-  cvv: "133",
-};
-function cc_format(value) {
-  var v = value
-    .replace(/\s+/g, "")
-    .replace(/[^0-9]/gi, "")
-    .replace(/\D/g, "");
-  var matches = v.match(/\d{4,16}/g);
-  var match = (matches && matches[0]) || "";
-  var parts = [];
-  let len, i;
-  for (i = 0, len = match.length; i < len; i += 4) {
-    parts.push(match.substring(i, i + 4));
-  }
-  if (parts.length) {
-    return parts.join("  ");
-  } else {
-    return v;
-  }
-}
-function cc_expires_format(string) {
-  return string
-    .replace(
-      /[^0-9]/g,
-      "" // To allow only numbers
-    )
-    .replace(
-      /^([2-9])$/g,
-      "0$1" // To handle 3 > 03
-    )
-    .replace(
-      /^(1{1})([3-9]{1})$/g,
-      "0$1/$2" // 13 > 01/3
-    )
-    .replace(
-      /^0{1,}/g,
-      "0" // To handle 00 > 0
-    )
-    .replace(
-      /^([0-1]{1}[0-9]{1})([0-9]{1,2}).*/g,
-      "$1/$2" // To handle 113 > 11/3
-    );
-}
-let currentYear = new Date().getFullYear().toString();
-let currentMonth = ("0" + (new Date().getMonth() + 1)).slice(-2);
+
 const MasterCard = () => {
   return (
     <div>
