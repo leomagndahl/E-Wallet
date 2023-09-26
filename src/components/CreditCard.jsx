@@ -23,7 +23,6 @@ const CreditCard = ({ color, cardDb, newCard, displayCard }) => {
   } else {
     index = 0;
   }
-  console.log(index);
 
   const defaultData = useMemo(() => {
     return newCard ? data : { ...data[index] };
@@ -70,11 +69,11 @@ const CreditCard = ({ color, cardDb, newCard, displayCard }) => {
                 <MasterCard />
                 {/* Replace with Logo ^ */}
               </div>
-              <div className="flex">
+              <div>
                 <span className="flex items-center text-base top-3">
                   <LeftCaret />
                   <input
-                    className="bg-transparent focus:outline-none border border-transparent  focus:border-black rounded-md px-1"
+                    className="w-full bg-transparent focus:outline-none border border-transparent  focus:border-black rounded-md px-1"
                     type="text"
                     defaultValue={cc_format(creditCardDetails?.number)}
                     onChange={(e) => {

@@ -2,8 +2,10 @@ import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import CreditCard from "./CreditCard";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteCard } from "./add-card-form/addCardSlice";
 
-const cards = [
+const cardsArr = [
   {
     name: "Card 1",
     card: (
@@ -40,7 +42,21 @@ const cards = [
 ];
 
 export default function Example() {
-  const [selected, setSelected] = useState(cards[0]);
+  let cards2 = useSelector((state) => state.cardInfo.cards);
+  const dispatch = useDispatch();
+
+  const [selected, setSelected] = useState(cards2[0]);
+  // console.log(cards2);
+
+  const handleDeleteCard = () => {
+    console.log(selected);
+    if (cards2.length !== 1) {
+      dispatch(deleteCard(selected.number));
+      setSelected(cards2[0]);
+    } else {
+      alert("Cant delete the last card!");
+    }
+  };
 
   return (
     <div className="bg-white shadow-md w-11/12 p-2 rounded">
@@ -50,7 +66,9 @@ export default function Example() {
             <span className="block truncate text-xs font-light text-center ">
               Select Card
             </span>
-            <span className="block p-2">{selected.name}</span>
+            <span className="block p-2">
+              {selected.number.slice(0, -1).replace(/(.{4})/g, "$1 ")}
+            </span>
             <div className="flex items-center">
               <span className="pointer-events-none absolute inset-y-0 top-4 right-4 flex items-center pr-2">
                 <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -64,15 +82,15 @@ export default function Example() {
             leaveTo="opacity-0"
           >
             <Listbox.Options className="absolute max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {cards.map((person, personIdx) => (
+              {cards2.map((card, cardIdx) => (
                 <Listbox.Option
-                  key={personIdx}
+                  key={cardIdx}
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
                       active ? "bg-amber-100 text-amber-900" : "text-gray-900"
                     }`
                   }
-                  value={person}
+                  value={card}
                 >
                   {({ selected }) => (
                     <>
@@ -81,7 +99,7 @@ export default function Example() {
                           selected ? "font-medium" : "font-normal"
                         }`}
                       >
-                        {person.name}
+                        {card.number.slice(0, -1).replace(/(.{4})/g, "$1 ")}
                       </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
@@ -99,6 +117,7 @@ export default function Example() {
           <button
             type="button"
             className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+            onClick={handleDeleteCard}
           >
             Delete
           </button>

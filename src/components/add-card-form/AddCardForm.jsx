@@ -9,10 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addCard,
   setNumber,
-  setOwnerName,
   setExpiryDate,
   setCvv,
   setVendor,
+  resetNewCard,
 } from "./addCardSlice";
 import { useNavigate } from "react-router-dom";
 
@@ -37,8 +37,12 @@ function AddCardForm() {
   }, [defaultData]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the default form submission
+
+    // Your form submission logic here
     dispatch(addCard(creditCardDetails));
+    dispatch(resetNewCard());
+    setCreditCardDetails(defaultData);
     navigate("/cards");
   };
 

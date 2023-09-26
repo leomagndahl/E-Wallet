@@ -20,6 +20,7 @@ export default function AddCard() {
           shadowSize={"xl"}
           cardDb="newCard"
           newCard={true}
+          displayCard={true}
         />
       </div>
       <div className="flex justify-center items-center w-full mb-24">

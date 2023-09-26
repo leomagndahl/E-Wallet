@@ -16,7 +16,7 @@ const addCardSlice = createSlice({
     status: "",
     cards: JSON.parse(localStorage.getItem("cards")) || [
       {
-        number: "1234567812345678",
+        number: "12345678123456789",
         ownerName: initialOwnerName || "",
         expiryDate: "06/29",
         cvv: "133",
@@ -53,9 +53,30 @@ const addCardSlice = createSlice({
     setVendor: (state, action) => {
       state.newCard.chooseVendor = action.payload;
     },
+    deleteCard: (state, action) => {
+      const updatedCards = state.cards.filter((card) => card.number !== action.payload);
+      localStorage.setItem("cards", JSON.stringify(updatedCards));
+
+      return {
+        ...state,
+        cards: updatedCards,
+      };
+    },
+    resetNewCard: (state) => {
+      return {
+        ...state,
+        newCard: {
+          number: "",
+          ownerName: initialOwnerName || "",
+          expiryDate: "",
+          cvv: "",
+          chooseVendor: "",
+        },
+      };
+    },
   },
   extraReducers: {
-    [getOwnerName.pending]: (state, action) => {
+    [getOwnerName.pending]: (state) => {
       state.status = "Loading";
     },
     [getOwnerName.fulfilled]: (state, action) => {
@@ -71,7 +92,15 @@ const addCardSlice = createSlice({
   },
 });
 
-export const { addCard, setNumber, setOwnerName, setExpiryDate, setCvv, setVendor } =
-  addCardSlice.actions;
+export const {
+  addCard,
+  setNumber,
+  setOwnerName,
+  setExpiryDate,
+  setCvv,
+  setVendor,
+  deleteCard,
+  resetNewCard,
+} = addCardSlice.actions;
 
 export default addCardSlice.reducer;
