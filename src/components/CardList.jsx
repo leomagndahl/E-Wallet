@@ -10,7 +10,8 @@ export default function Example() {
 
   const dispatch = useDispatch();
 
-  const [selected, setSelected] = useState(cards2[0]);
+  let activeCardIndex = cards2.findIndex((card) => card.number === activeCard.number);
+  const [selected, setSelected] = useState(cards2[activeCardIndex]);
 
   const handleDeleteCard = () => {
     if (selected.number !== activeCard.number) {
