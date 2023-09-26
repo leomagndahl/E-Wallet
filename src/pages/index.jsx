@@ -7,14 +7,13 @@ import { useEffect, useState } from "react";
 export default function Home() {
   let dispatch = useDispatch();
   const navigate = useNavigate();
-  const ownerName = useSelector((state) => state.cardInfo.cards);
   const isOwnerNameFetched = useSelector((state) => state.cardInfo.status === "Success!");
   const [show, setShow] = useState(false);
 
   const handleGetUser = () => {
-    if (!isOwnerNameFetched) {
-      dispatch(getOwnerName());
-    }
+    // if (!isOwnerNameFetched) {
+    // }
+    dispatch(getOwnerName());
     setShow(true);
     setTimeout(() => {
       setShow(false);
