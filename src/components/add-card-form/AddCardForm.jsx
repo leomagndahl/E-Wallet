@@ -13,6 +13,7 @@ import {
   setCvv,
   setVendor,
   resetNewCard,
+  setActiveCard,
 } from "./addCardSlice";
 import { useNavigate } from "react-router-dom";
 
@@ -32,18 +33,41 @@ function AddCardForm() {
   });
 
   useEffect(() => {
-    // When the component mounts, update the form data with Redux data
     setCreditCardDetails(defaultData);
   }, [defaultData]);
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault();
 
-    // Your form submission logic here
-    dispatch(addCard(creditCardDetails));
-    dispatch(resetNewCard());
-    setCreditCardDetails(defaultData);
-    navigate("/cards");
+    const validationResults = {
+      isNumberValid: /^\d{16}$/.test(creditCardDetails.number),
+      isExpiryDateValid: /^(0[1-9]|1[0-2])\/\d{2}$/.test(creditCardDetails.expiryDate),
+      isCvvValid: /^\d{3}$/.test(creditCardDetails.cvv),
+      isVendorValid: creditCardDetails.chooseVendor !== "",
+    };
+
+    const errorMessages = {
+      isNumberValid: "Please input a correct credit card number.",
+      isExpiryDateValid: "Please input a valid expiry date in the format MM/YY.",
+      isCvvValid: "Please input a valid CVV code.",
+      isVendorValid: "Please choose a vendor.",
+    };
+
+    const failedValidations = Object.keys(validationResults).filter(
+      (key) => !validationResults[key]
+    );
+
+    if (failedValidations.length === 0) {
+      dispatch(addCard(creditCardDetails));
+      dispatch(setActiveCard(creditCardDetails));
+      dispatch(resetNewCard());
+      setCreditCardDetails(defaultData);
+      navigate("/cards");
+    } else {
+      const errorMessage = failedValidations.map((key) => errorMessages[key]).join("\n");
+
+      alert(errorMessage);
+    }
   };
 
   return (
@@ -57,18 +81,19 @@ function AddCardForm() {
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
+            maxLength={19}
             value={cc_format(creditCardDetails?.number)}
             onChange={(e) => {
               const { value } = e.target;
               let finalValue = value.replaceAll(" ", "");
-              isNaN(finalValue)
-                ? setError({ ...error, number: true })
-                : finalValue.length < 16
-                ? setError({ ...error, number: true })
-                : setError({ ...error, number: false });
+              if (!/^\d{16}$/.test(finalValue)) {
+                setError({ ...error, number: true });
+              } else {
+                setError({ ...error, number: false });
+              }
               setCreditCardDetails({
                 ...creditCardDetails,
-                number: value,
+                number: finalValue,
               });
               dispatch(setNumber(finalValue));
             }}
@@ -176,7 +201,7 @@ function AddCardForm() {
             dispatch(setVendor(value));
           }}
         >
-          <option defaultValue>Choose a Vendor</option>
+          <option value="">Choose a Vendor</option>
           <option value="BigBank">BigBank</option>
           <option value="VISA">VISA</option>
           <option value="Mastercard">Mastercard</option>

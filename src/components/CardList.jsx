@@ -1,61 +1,34 @@
 import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import CreditCard from "./CreditCard";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteCard } from "./add-card-form/addCardSlice";
-
-const cardsArr = [
-  {
-    name: "Card 1",
-    card: (
-      <CreditCard
-        color="bg-amber-500"
-        cardDb="cards"
-        newCard={false}
-        displayCard={false}
-      />
-    ),
-  },
-  {
-    name: "Card 2",
-    card: (
-      <CreditCard
-        color="bg-violet-300"
-        cardDb="cards"
-        newCard={false}
-        displayCard={false}
-      />
-    ),
-  },
-  {
-    name: "Card 3",
-    card: (
-      <CreditCard
-        color="bg-indigo-400"
-        cardDb="cards"
-        newCard={false}
-        displayCard={false}
-      />
-    ),
-  },
-];
+import { deleteCard, setActiveCard } from "./add-card-form/addCardSlice";
 
 export default function Example() {
   let cards2 = useSelector((state) => state.cardInfo.cards);
+  const activeCard = useSelector((state) => state.cardInfo.activeCard);
+
   const dispatch = useDispatch();
 
   const [selected, setSelected] = useState(cards2[0]);
-  // console.log(cards2);
 
   const handleDeleteCard = () => {
-    console.log(selected);
-    if (cards2.length !== 1) {
-      dispatch(deleteCard(selected.number));
-      setSelected(cards2[0]);
+    if (selected.number !== activeCard.number) {
+      if (cards2.length !== 1) {
+        dispatch(deleteCard(selected.number));
+        setSelected(cards2[0]);
+      } else {
+        alert("Cant delete the last card!");
+      }
     } else {
-      alert("Cant delete the last card!");
+      alert("Cant delete an active card");
     }
+  };
+
+  const setActive = () => {
+    dispatch(setActiveCard(selected));
+
+    setSelected(selected);
   };
 
   return (
@@ -66,9 +39,7 @@ export default function Example() {
             <span className="block truncate text-xs font-light text-center ">
               Select Card
             </span>
-            <span className="block p-2">
-              {selected.number.slice(0, -1).replace(/(.{4})/g, "$1 ")}
-            </span>
+            <span className="block p-2">{selected.number.replace(/(.{4})/g, "$1 ")}</span>
             <div className="flex items-center">
               <span className="pointer-events-none absolute inset-y-0 top-4 right-4 flex items-center pr-2">
                 <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -99,7 +70,7 @@ export default function Example() {
                           selected ? "font-medium" : "font-normal"
                         }`}
                       >
-                        {card.number.slice(0, -1).replace(/(.{4})/g, "$1 ")}
+                        {card.number.replace(/(.{4})/g, "$1 ")}
                       </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
@@ -124,6 +95,7 @@ export default function Example() {
           <button
             type="button"
             className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+            onClick={setActive}
           >
             Set Active
           </button>

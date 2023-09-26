@@ -7,9 +7,11 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 export default function Cards() {
   const cardsArr = useSelector((state) => state.cardInfo.cards);
+  const activeCard = useSelector((state) => state.cardInfo.activeCard);
 
   const [show, setShow] = useState(false);
-  // console.log(cardsArr.length);
+  const [currentActiveCard, setCurrentActiveCard] = useState(activeCard);
+
   const navigate = useNavigate();
   const handleAddCard = () => {
     if (cardsArr.length >= 4) {
@@ -28,6 +30,10 @@ export default function Cards() {
     }
   }, [cardsArr, setShow]);
 
+  useEffect(() => {
+    setCurrentActiveCard(activeCard);
+  }, [activeCard]);
+
   return (
     <div className="flex flex-col items-center h-full w-full">
       <div className="mb-8">
@@ -41,10 +47,11 @@ export default function Cards() {
       <div id="card">
         <p className="text-xs font-light text-center mb-4 bg-">Active Card</p>
         <CreditCard
-          color="bg-amber-500"
           cardDb="cards"
           newCard={false}
-          displayCard={true}
+          home={true}
+          activeCard={currentActiveCard}
+          key={currentActiveCard?.number}
         />
       </div>
       <div id="allCards" className="mt-12 w-full h-fit flex flex-wrap justify-center">

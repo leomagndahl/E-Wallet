@@ -11,11 +11,12 @@ export function cc_format(value) {
     parts.push(match.substring(i, i + 4));
   }
   if (parts.length) {
-    return parts.join("  ");
+    return parts.join(" ");
   } else {
     return v;
   }
 }
+
 export function cc_expires_format(string) {
   return string
     .replace(

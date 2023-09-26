@@ -19,8 +19,8 @@ export default function AddCard() {
           color="bg-amber-500"
           shadowSize={"xl"}
           cardDb="newCard"
+          home={false}
           newCard={true}
-          displayCard={true}
         />
       </div>
       <div className="flex justify-center items-center w-full mb-24">

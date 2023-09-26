@@ -16,7 +16,7 @@ const addCardSlice = createSlice({
     status: "",
     cards: JSON.parse(localStorage.getItem("cards")) || [
       {
-        number: "12345678123456789",
+        number: "1234567812345678",
         ownerName: initialOwnerName || "",
         expiryDate: "06/29",
         cvv: "133",
@@ -30,6 +30,7 @@ const addCardSlice = createSlice({
       cvv: "",
       chooseVendor: "",
     },
+    activeCard: JSON.parse(localStorage.getItem("activeCard")) || {},
   },
   reducers: {
     addCard: (state, action) => {
@@ -74,6 +75,11 @@ const addCardSlice = createSlice({
         },
       };
     },
+    setActiveCard: (state, action) => {
+      let activeCard = action.payload;
+      localStorage.setItem("activeCard", JSON.stringify(activeCard));
+      state.activeCard = activeCard;
+    },
   },
   extraReducers: {
     [getOwnerName.pending]: (state) => {
@@ -82,12 +88,34 @@ const addCardSlice = createSlice({
     [getOwnerName.fulfilled]: (state, action) => {
       state.status = "Success!";
       const newName = action.payload;
+
+      // Update ownerName for all cards in state.cards
       state.cards = state.cards.map((card) => ({
         ...card,
         ownerName: newName,
       }));
+
+      // Update ownerName for all cards in localStorage
+      const cardsInLocalStorage =
+        JSON.parse(localStorage.getItem("cards")) || state.cards;
+      const updatedCardsInLocalStorage = cardsInLocalStorage.map((card) => ({
+        ...card,
+        ownerName: newName,
+      }));
+      localStorage.setItem("cards", JSON.stringify(updatedCardsInLocalStorage));
+
+      // Update ownerName for activeCard (if it's an object)
+      state.activeCard = {
+        ...state.cards[0],
+        ownerName: newName,
+      };
+
+      // Update ownerName for newCard
       state.newCard.ownerName = newName;
-      localStorage.setItem("ownerName", action.payload); // Save to local storage
+
+      // Update ownerName in localStorage
+      localStorage.setItem("ownerName", action.payload);
+      localStorage.setItem("activeCard", JSON.stringify(state.activeCard));
     },
   },
 });
@@ -101,6 +129,7 @@ export const {
   setVendor,
   deleteCard,
   resetNewCard,
+  setActiveCard,
 } = addCardSlice.actions;
 
 export default addCardSlice.reducer;

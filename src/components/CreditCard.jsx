@@ -15,20 +15,21 @@ import {
   setVendor,
 } from "./add-card-form/addCardSlice";
 
-const CreditCard = ({ color, cardDb, newCard, displayCard }) => {
+const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
   let data = useSelector((state) => state.cardInfo[cardDb]);
-  let index = null;
-  if (displayCard) {
-    index = data.length - 1;
-  } else {
-    index = 0;
+  if (home) {
+    if (activeCard) {
+      data = activeCard;
+    }
   }
+  let color = "";
 
   const defaultData = useMemo(() => {
-    return newCard ? data : { ...data[index] };
-  }, [newCard, data, index]);
+    return newCard ? data : data;
+  }, [newCard, data]);
 
   const [creditCardDetails, setCreditCardDetails] = useState(defaultData);
+
   const [error, setError] = useState({
     number: false,
     expiryDate: false,
@@ -43,10 +44,18 @@ const CreditCard = ({ color, cardDb, newCard, displayCard }) => {
     }
   };
 
+  if (creditCardDetails.chooseVendor === "BigBank") {
+    color = "bg-slate-500";
+  } else if (creditCardDetails.chooseVendor === "Mastercard") {
+    color = "bg-amber-500";
+  } else if (creditCardDetails.chooseVendor === "VISA") {
+    color = "bg-teal-500";
+  }
+
   useEffect(() => {
     // When the component mounts, update the form data with Redux data
-    setCreditCardDetails(defaultData);
-  }, [defaultData]);
+    setCreditCardDetails(activeCard || defaultData);
+  }, [defaultData, activeCard]);
 
   return (
     <div className="flex flex-col justify-center items-center bg-transparent min-h-scree">
@@ -61,7 +70,7 @@ const CreditCard = ({ color, cardDb, newCard, displayCard }) => {
               </div>
             )}
             <div
-              className={`flex flex-col justify-between ${color} h-48 lg:w-80 w-80 rounded-lg px-7 py-5 transition duration-400 shadow-xl hover:scale-105 md:hover:scale-110 sample1`}
+              className={`flex flex-col justify-between  ${color} h-48 lg:w-80 w-80 rounded-lg px-7 py-5 transition duration-400 shadow-xl hover:scale-105 md:hover:scale-110 sample1`}
             >
               <div className="flex justify-between leading-4 items-center">
                 <span className="sm:text-sm text-xs font-medium">Credit Card</span>
@@ -136,10 +145,10 @@ const CreditCard = ({ color, cardDb, newCard, displayCard }) => {
   );
 };
 CreditCard.propTypes = {
-  color: PropTypes.string.isRequired, // Ensure that color is a required string prop
   cardDb: PropTypes.string.isRequired,
   newCard: PropTypes.bool.isRequired, // Ensure that color is a required string prop
-  displayCard: PropTypes.bool.isRequired, // Ensure that color is a required string prop
+  home: PropTypes.bool.isRequired, // Ensure that color is a required string prop
+  activeCard: PropTypes.object, // Ensure that color is a required string prop
 };
 
 export default CreditCard;

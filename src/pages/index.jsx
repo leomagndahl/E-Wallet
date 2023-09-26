@@ -22,18 +22,6 @@ export default function Home() {
     }, 2000);
   };
 
-  // useEffect(() => {
-  //   if (!isOwnerNameFetched) {
-  //     dispatch(getOwnerName());
-  //   }
-  //   setShow(true);
-  //   setTimeout(() => {
-  //     setShow(false);
-  //     navigate("/cards");
-  //   }, 2000);
-  // }, [dispatch, isOwnerNameFetched, navigate]);
-  console.log(ownerName);
-
   return (
     <div className="h-full">
       <div className="flex flex-col items-center justify-center h-5/6 w-full">
