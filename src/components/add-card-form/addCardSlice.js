@@ -66,7 +66,7 @@ const addCardSlice = createSlice({
         ...state,
         newCard: {
           number: "",
-          ownerName: initialOwnerName || "",
+          ownerName: state.newCard.ownerName,
           expiryDate: "",
           cvv: "",
           chooseVendor: "",
