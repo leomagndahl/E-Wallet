@@ -21,12 +21,3 @@ export default function Layout() {
     </>
   );
 }
-
-// export const Loader = async () => {
-//   console.log("Entered route");
-//   let postsRes = await axios.get(`https://jsonplaceholder.typicode.com/posts`);
-//   let postsData = postsRes.data;
-//   let usersRes = await axios.get(`https://jsonplaceholder.typicode.com/users/`);
-//   let usersData = usersRes.data;
-//   return { postsData, usersData };
-// };

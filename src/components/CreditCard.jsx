@@ -7,34 +7,23 @@ import {
   currentYear,
 } from "../functions/creditCard";
 import { useSelector } from "react-redux";
-import {
-  setNumber,
-  setOwnerName,
-  setExpiryDate,
-  setCvv,
-  setVendor,
-} from "./add-card-form/addCardSlice";
+
+const vendorColors = {
+  BigBank: "bg-violet-400",
+  Mastercard: "bg-amber-500",
+  VISA: "bg-sky-500",
+};
 
 const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
-  let data = useSelector((state) => state.cardInfo[cardDb]);
-  if (home) {
-    if (activeCard) {
-      data = activeCard;
-    }
-  }
-  let color = "";
+  const cardData = useSelector((state) => state.cardInfo[cardDb]);
+  const data = home && activeCard ? activeCard : cardData;
 
-  const defaultData = useMemo(() => {
-    return newCard ? data : data;
-  }, [newCard, data]);
+  const defaultData = useMemo(() => (newCard ? data : data), [newCard, data]);
 
   const [creditCardDetails, setCreditCardDetails] = useState(defaultData);
+  const [error, setError] = useState({ number: false, expiryDate: false, cvv: false });
 
-  const [error, setError] = useState({
-    number: false,
-    expiryDate: false,
-    cvv: false,
-  });
+  const getVendorColor = () => vendorColors[creditCardDetails.chooseVendor] || "";
 
   const handleVendor = () => {
     if (creditCardDetails.chooseVendor === "Choose a Vendor") {
@@ -44,16 +33,7 @@ const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
     }
   };
 
-  if (creditCardDetails.chooseVendor === "BigBank") {
-    color = "bg-slate-500";
-  } else if (creditCardDetails.chooseVendor === "Mastercard") {
-    color = "bg-amber-500";
-  } else if (creditCardDetails.chooseVendor === "VISA") {
-    color = "bg-teal-500";
-  }
-
   useEffect(() => {
-    // When the component mounts, update the form data with Redux data
     setCreditCardDetails(activeCard || defaultData);
   }, [defaultData, activeCard]);
 
@@ -70,13 +50,12 @@ const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
               </div>
             )}
             <div
-              className={`flex flex-col justify-between  ${color} h-48 lg:w-80 w-80 rounded-lg px-7 py-5 transition duration-400 shadow-xl hover:scale-105 md:hover:scale-110 sample1`}
+              className={`flex flex-col justify-between  ${getVendorColor()} h-48 lg:w-80 w-80 rounded-lg px-7 py-5 transition duration-400 shadow-xl hover:scale-105 md:hover:scale-110 sample1`}
             >
               <div className="flex justify-between leading-4 items-center">
                 <span className="sm:text-sm text-xs font-medium">Credit Card</span>
                 <span className="sm:text-sm text-xs font-medium">{handleVendor()}</span>
-                <MasterCard />
-                {/* Replace with Logo ^ */}
+                <BigBankLogo />
               </div>
               <div>
                 <span className="flex items-center text-base top-3">
@@ -153,7 +132,7 @@ CreditCard.propTypes = {
 
 export default CreditCard;
 
-const MasterCard = () => {
+const BigBankLogo = () => {
   return (
     <div>
       <svg

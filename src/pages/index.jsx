@@ -1,18 +1,15 @@
 // src/pages/index.tsx
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { getOwnerName } from "../components/add-card-form/addCardSlice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
   let dispatch = useDispatch();
   const navigate = useNavigate();
-  const isOwnerNameFetched = useSelector((state) => state.cardInfo.status === "Success!");
   const [show, setShow] = useState(false);
 
   const handleGetUser = () => {
-    // if (!isOwnerNameFetched) {
-    // }
     dispatch(getOwnerName());
     setShow(true);
     setTimeout(() => {
@@ -59,12 +56,6 @@ export default function Home() {
             >
               Load Account
             </button>
-            {/* <Link
-            to="/cards"
-            className="bg-gray-200 shadow-lg shadow-black-500/40 hover:bg-gray-700 font-semibold py-2 px-2 rounded text-blue-500 hover:underline"
-          >
-            go to /cards
-          </Link> */}
           </div>
         )}
       </div>

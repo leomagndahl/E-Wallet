@@ -4,8 +4,6 @@ import {
   currentMonth,
   currentYear,
 } from "../../functions/creditCard";
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   addCard,
   setNumber,
@@ -15,58 +13,36 @@ import {
   resetNewCard,
   setActiveCard,
 } from "./addCardSlice";
+import { validateForm } from "../../functions/addCardFormFunc";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 function AddCardForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  let status = useSelector((state) => state.cardInfo.status);
+  let newCard = useSelector((state) => state.cardInfo.newCard);
 
-  let defaultData = useSelector((state) => state.cardInfo.newCard);
-
-  const [creditCardDetails, setCreditCardDetails] = useState(defaultData);
-  const [error, setError] = useState({
-    number: false,
-    expiryDate: false,
-    cvv: false,
-  });
+  const [creditCardDetails, setCreditCardDetails] = useState(newCard);
 
   useEffect(() => {
-    setCreditCardDetails(defaultData);
-  }, [defaultData]);
+    setCreditCardDetails(newCard);
+  }, [newCard]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const validationResults = {
-      isNumberValid: /^\d{16}$/.test(creditCardDetails.number),
-      isExpiryDateValid: /^(0[1-9]|1[0-2])\/\d{2}$/.test(creditCardDetails.expiryDate),
-      isCvvValid: /^\d{3}$/.test(creditCardDetails.cvv),
-      isVendorValid: creditCardDetails.chooseVendor !== "",
-    };
+    const errors = validateForm(creditCardDetails, currentYear, currentMonth);
 
-    const errorMessages = {
-      isNumberValid: "Please input a correct credit card number.",
-      isExpiryDateValid: "Please input a valid expiry date in the format MM/YY.",
-      isCvvValid: "Please input a valid CVV code.",
-      isVendorValid: "Please choose a vendor.",
-    };
-
-    const failedValidations = Object.keys(validationResults).filter(
-      (key) => !validationResults[key]
-    );
-
-    if (failedValidations.length === 0) {
+    if (Object.keys(errors).length === 0) {
       dispatch(addCard(creditCardDetails));
       dispatch(setActiveCard(creditCardDetails));
       dispatch(resetNewCard());
-      setCreditCardDetails(defaultData);
+      setCreditCardDetails(newCard);
       navigate("/cards");
     } else {
-      const errorMessage = failedValidations.map((key) => errorMessages[key]).join("\n");
-
-      alert(errorMessage);
+      alert(Object.values(errors).join("\n"));
     }
   };
 
@@ -86,15 +62,6 @@ function AddCardForm() {
             onChange={(e) => {
               const { value } = e.target;
               let finalValue = value.replaceAll(" ", "");
-              if (!/^\d{16}$/.test(finalValue)) {
-                setError({ ...error, number: true });
-              } else {
-                setError({ ...error, number: false });
-              }
-              setCreditCardDetails({
-                ...creditCardDetails,
-                number: finalValue,
-              });
               dispatch(setNumber(finalValue));
             }}
           />
@@ -139,18 +106,6 @@ function AddCardForm() {
                 value={cc_expires_format(creditCardDetails?.expiryDate)}
                 onChange={(e) => {
                   const { value } = e.target;
-                  value.match(/^(0[1-9]|1[0-2])\/(([0-9]{4}|[0-9]{2})$)/)
-                    ? value.slice(-2) < currentYear.slice(-2)
-                      ? setError({ ...error, expiryDate: true })
-                      : value.slice(-2) === currentYear.slice(-2) &&
-                        value.slice(0, 2) <= currentMonth
-                      ? setError({ ...error, expiryDate: true })
-                      : setError({ ...error, expiryDate: false })
-                    : setError({ ...error, expiryDate: true });
-                  setCreditCardDetails({
-                    ...creditCardDetails,
-                    expiryDate: value,
-                  });
                   dispatch(setExpiryDate(value));
                 }}
               />

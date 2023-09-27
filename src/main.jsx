@@ -11,10 +11,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <RouterProvider router={createBrowserRouter(routes)} />
   </Provider>
 );
-
-// const app = document.getElementById("app");
-// createRoot(app).render(
-//   <Provider store={store}>
-//     <Routes />
-//   </Provider>
-// );

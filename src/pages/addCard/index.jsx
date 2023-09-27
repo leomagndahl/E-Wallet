@@ -15,13 +15,7 @@ export default function AddCard() {
         </Link>
       </div>
       <div className="mb-8">
-        <CreditCard
-          color="bg-amber-500"
-          shadowSize={"xl"}
-          cardDb="newCard"
-          home={false}
-          newCard={true}
-        />
+        <CreditCard cardDb="newCard" home={false} newCard={true} />
       </div>
       <div className="flex justify-center items-center w-full mb-24">
         <AddCardForm />
