@@ -12,6 +12,7 @@ export default function Home() {
   const handleGetUser = () => {
     dispatch(getOwnerName());
     setShow(true);
+    // Fake loadingscreen for user experience
     setTimeout(() => {
       setShow(false);
       navigate("/cards");
@@ -19,7 +20,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-full">
+    <div className="w-full h-full">
       <div className="flex flex-col items-center justify-center h-5/6 w-full">
         {!show && <h1 className="text-2xl font-bold">Welcome to your E-Wallet</h1>}
         {show && (

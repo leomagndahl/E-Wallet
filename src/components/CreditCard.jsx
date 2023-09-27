@@ -1,11 +1,9 @@
+// Whole component is a CreditCard component i got from a library with major changes to both looks.
+// And to functionality to have conditional rendering depending on when its being rendered.
+
 import { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import {
-  cc_format,
-  cc_expires_format,
-  currentMonth,
-  currentYear,
-} from "../functions/creditCard";
+import { cc_format, cc_expires_format } from "../functions/creditCard";
 import { useSelector } from "react-redux";
 
 const vendorColors = {
@@ -21,9 +19,9 @@ const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
   const defaultData = useMemo(() => (newCard ? data : data), [newCard, data]);
 
   const [creditCardDetails, setCreditCardDetails] = useState(defaultData);
-  const [error, setError] = useState({ number: false, expiryDate: false, cvv: false });
 
-  const getVendorColor = () => vendorColors[creditCardDetails.chooseVendor] || "";
+  const getVendorColor = () =>
+    vendorColors[creditCardDetails.chooseVendor] || "bg-gray-300";
 
   const handleVendor = () => {
     if (creditCardDetails.chooseVendor === "Choose a Vendor") {
@@ -42,15 +40,8 @@ const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
       <div className="flex flex-col justify-center items-center">
         <div className="flex md:flex-row flex-col items-center justify-center md:gap-20 gap-12">
           <div className="flex flex-col">
-            {(error.expiryDate || error.number) && (
-              <div className="sm:text-sm text-xs text-red-600 h-9">
-                {error.expiryDate
-                  ? "Please enter valid expiry date"
-                  : "Please enter valid card number"}
-              </div>
-            )}
             <div
-              className={`flex flex-col justify-between  ${getVendorColor()} h-48 lg:w-80 w-80 rounded-lg px-7 py-5 transition duration-400 shadow-xl hover:scale-105 md:hover:scale-110 sample1`}
+              className={`flex flex-col justify-between ${getVendorColor()} h-48 lg:w-80 w-80 rounded-lg px-7 py-5 transition duration-400 shadow-xl hover:scale-105 md:hover:scale-110 sample1`}
             >
               <div className="flex justify-between leading-4 items-center">
                 <span className="sm:text-sm text-xs font-medium">Credit Card</span>
@@ -64,19 +55,6 @@ const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
                     className="w-full bg-transparent focus:outline-none border border-transparent  focus:border-black rounded-md px-1"
                     type="text"
                     defaultValue={cc_format(creditCardDetails?.number)}
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      let finalValue = value.replaceAll(" ", "");
-                      isNaN(finalValue)
-                        ? setError({ ...error, number: true })
-                        : finalValue.length < 16
-                        ? setError({ ...error, number: true })
-                        : setError({ ...error, number: false });
-                      setCreditCardDetails({
-                        ...creditCardDetails,
-                        number: value,
-                      });
-                    }}
                     disabled
                   />
                 </span>
@@ -97,21 +75,6 @@ const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
                     type="text"
                     maxLength="5"
                     defaultValue={cc_expires_format(creditCardDetails?.expiryDate)}
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      value.match(/^(0[1-9]|1[0-2])\/(([0-9]{4}|[0-9]{2})$)/)
-                        ? value.slice(-2) < currentYear.slice(-2)
-                          ? setError({ ...error, expiryDate: true })
-                          : value.slice(-2) === currentYear.slice(-2) &&
-                            value.slice(0, 2) <= currentMonth
-                          ? setError({ ...error, expiryDate: true })
-                          : setError({ ...error, expiryDate: false })
-                        : setError({ ...error, expiryDate: true });
-                      setCreditCardDetails({
-                        ...creditCardDetails,
-                        expiryDate: value,
-                      });
-                    }}
                     disabled
                   />
                 </span>
@@ -125,9 +88,9 @@ const CreditCard = ({ cardDb, newCard, home, activeCard }) => {
 };
 CreditCard.propTypes = {
   cardDb: PropTypes.string.isRequired,
-  newCard: PropTypes.bool.isRequired, // Ensure that color is a required string prop
-  home: PropTypes.bool.isRequired, // Ensure that color is a required string prop
-  activeCard: PropTypes.object, // Ensure that color is a required string prop
+  newCard: PropTypes.bool.isRequired,
+  home: PropTypes.bool.isRequired,
+  activeCard: PropTypes.object,
 };
 
 export default CreditCard;

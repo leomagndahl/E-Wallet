@@ -1,3 +1,5 @@
+// This is a listbox element from https://headlessui.com/react/listbox with heavy modification to change redux states.
+
 import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";

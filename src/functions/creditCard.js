@@ -1,3 +1,4 @@
+// changes display format for creditcard number
 export function cc_format(value) {
   var v = value
     .replace(/\s+/g, "")
@@ -17,6 +18,7 @@ export function cc_format(value) {
   }
 }
 
+// changes display format for creditcard date
 export function cc_expires_format(string) {
   return string
     .replace(/[^0-9]/g, "")
@@ -25,5 +27,6 @@ export function cc_expires_format(string) {
     .replace(/^0{1,}/g, "0")
     .replace(/^([0-1]{1}[0-9]{1})([0-9]{1,2}).*/g, "$1/$2");
 }
+// Current year and month from the original CreditCard component
 export const currentYear = new Date().getFullYear().toString();
 export const currentMonth = ("0" + (new Date().getMonth() + 1)).slice(-2);

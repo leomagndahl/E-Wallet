@@ -8,6 +8,7 @@ export const getOwnerName = createAsyncThunk("addCardSlice/getOwnerName", async 
   return name.toUpperCase();
 });
 
+// Using sessionStorage because when i was bugtesting it was annoying to add cards all the time.
 const initialOwnerName = sessionStorage.getItem("ownerName");
 
 const addCardSlice = createSlice({
